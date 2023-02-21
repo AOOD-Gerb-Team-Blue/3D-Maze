@@ -170,7 +170,6 @@ public class MazeGenerator {
         }
     }
     public void toMaze(){
-    	printConnections();
     	int size = connections.size();
     	//store all of the chambers in 1d array, access location with getCoord method
     	Chamber[][][] chambers = new Chamber[size][size][size];
@@ -208,7 +207,7 @@ public class MazeGenerator {
     						diffCount++;
     					}
     					if (diffCount >1) {
-							System.out.println("Uh oh, coordinates differ in >1 dimension");
+						System.out.println("Uh oh, coordinates differ in >1 dimension");
     					}
     					//actual filling in data down here
     					int dir = -1;
@@ -225,7 +224,7 @@ public class MazeGenerator {
     					} else if (x < c) {
     						dir = Direction.WEST;
     					}
-						chambers[i][k][c].setAdjacentChamber(dir, chambers[z][y][x]);
+					chambers[i][k][c].setAdjacentChamber(dir, chambers[z][y][x]);
     				}
     			}
     		}
