@@ -88,8 +88,8 @@ public class MazeGenerator {
                         boolean xGood = x <= 3 && x >= 0;
                         if (zGood && yGood && xGood) {
                             //fill out second coordinate in edge
-							Coordinate[] edge = new Coordinate[2];
-							edge[0] = new Coordinate(i,k,c);
+			    Coordinate[] edge = new Coordinate[2];
+			    edge[0] = new Coordinate(i,k,c);
                             edge[1] = new Coordinate(z,y,x);
                             boolean contained = false;
                             for (Coordinate[] other : edges) {
@@ -98,23 +98,12 @@ public class MazeGenerator {
                             	}
                             }
                             if (!contained) {
-								edges.add(edge);
+				edges.add(edge);
                             }
                         }
                     }
                 }
             }
-        }
-        for (Coordinate[] e : edges) {
-        	int a,b,c;
-        	a = e[0].getLevel();
-        	b = e[0].getRow();
-        	c = e[0].getColumn();
-        	int x,y,z;
-        	x = e[1].getLevel();
-        	y = e[1].getRow();
-        	z = e[1].getColumn();
-        	//System.out.println(a + " " + b + " " + c + ", " + x + " " + y + " " + z);
         }
         Collections.shuffle(edges);
         while (edges.size() > 0) {
