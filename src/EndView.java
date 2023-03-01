@@ -1,4 +1,3 @@
-
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -10,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,43 +20,36 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
-public class EndView extends JPanel {
+public class EndView extends JPanel implements MouseListener, MouseMotionListener{
 
 	//variables
 	private int playerScore;
 	private int[] newTopTen;
+	private boolean mouseHovered;
+	private JPanel panel;
 
 	EndView(int score, BackendEngine engine) {
 
 		//	actual code for the constructor:
 		playerScore = score;
-		updateLeaderboard(playerScore);
-		JPanel panel = new PaintEndView();
 		BackendEngine game = engine;
+		updateLeaderboard(playerScore);
+		panel = new PaintEndView();
 		panel.setLayout(null);
 		panel.setBackground(Color.WHITE);
-
-		//	close button
-		JButton closeBtn = new JButton("Exit");
-		closeBtn.setBounds(160,600,400,60);
-		panel.add(closeBtn);
-		closeBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				game.changeView("close");
-			}
-		});
+		panel.addMouseListener(this);
+		panel.addMouseMotionListener(this);
+	
 	}
-
 	//	method to read the csv file and edit it if necessary
 	private void updateLeaderboard(int score) {
 		int place = 0;
 		int[] topTen = new int[10];
 		newTopTen = new int[10];
 		Scanner scan = null;
-
 		//	read the csv file and make it an array
 		try {
-			scan = new Scanner(new File("C:/mydata/Java Projects/AOOD/3D-Maze/src/assets/3D-Maze-Scores.csv"));
+			scan = new Scanner(new File("/3D-Maze/src/assets/3D-Maze-Scores.csv"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -95,7 +88,7 @@ public class EndView extends JPanel {
 		String tempStr;
 		FileWriter fw = null;
 		try {
-			fw = new FileWriter(new File("C:/mydata/Java Projects/AOOD/3D-Maze/src/assets/3D-Maze-Scores.csv"));
+			fw = new FileWriter(new File("/3D-Maze/src/assets/3D-Maze-Scores.csv"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -112,7 +105,7 @@ public class EndView extends JPanel {
 			ex.printStackTrace();
 		}
 	}
-
+	
 	//paint component method to do all the painting required
 	private class PaintEndView extends JPanel {
 
@@ -121,10 +114,10 @@ public class EndView extends JPanel {
 			super.paintComponent(g);
 
 			//	Creates background and title
-			Image bgImage = readImage("/assets/endbg.jpg");
+			Image bgImage = readImage("/3D-Maze/src/assets/endbg.jpg");
 			Image bgScaled = bgImage.getScaledInstance(1151, 720, Image.SCALE_DEFAULT);
 			g.drawImage(bgScaled,-215,0,null);
-			Image titleImage = readImage("/assets/endtitle.png");
+			Image titleImage = readImage("/3D-Maze/src/assets/endtitle.png");
 			Image titleScaled = titleImage.getScaledInstance(680, 177, Image.SCALE_DEFAULT);
 			g.drawImage(titleScaled,20,10,null);
 
@@ -150,21 +143,20 @@ public class EndView extends JPanel {
 			g.fillRect(80,230,560,350);
 
 			//	creates the image that has numbers 1-10 for the leaderboard
-			Image leaderImage = readImage("/assets/endleaderboard.png");
+			Image leaderImage = readImage("/3D-Maze/src/assets/endleaderboard.png");
 			Image leaderScaled = leaderImage.getScaledInstance(300, 317, Image.SCALE_DEFAULT);
 			g.drawImage(leaderScaled,115,245,null);
 			g.setColor(Color.LIGHT_GRAY);
 			g.setFont(new Font("OCR A Extended", Font.BOLD, 40));
-
+			
 			//	reads from the newly altered file and displays the scores on the leaderboard (your score is yellow if on leaderboard)
 			Scanner scanner = null;
 			try {
-				scanner = new Scanner(new File("C:/mydata/Java Projects/AOOD/3D-Maze/src/assets/3D-Maze-Scores.csv"));
+				scanner = new Scanner(new File("/3D-Maze/src/assets/3D-Maze-Scores.csv"));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
 			scanner.useDelimiter(",");
-			int scanNext;
 			boolean yellowed = false;
 			yellowed = drawLBScore(Integer.parseInt(scanner.next()), 175, 283, yellowed, g) ;
 			yellowed = drawLBScore(Integer.parseInt(scanner.next()), 175, 351, yellowed, g) ;
@@ -177,8 +169,18 @@ public class EndView extends JPanel {
 			yellowed = drawLBScore(Integer.parseInt(scanner.next()), 430, 486, yellowed, g) ;
 			yellowed = drawLBScore(Integer.parseInt(scanner.next()), 430, 552, yellowed, g) ;
 			scanner.close();
+			
+			//end button
+			Image endButton;
+			if(mouseHovered) {
+				endButton = readImage("/3D-Maze/src/assets/closeOutlined.png");
+				g.drawImage(endButton,208,598,null);
+			}else{ 
+				endButton = readImage("/3D-Maze/src/assets/close.png");
+				g.drawImage(endButton,210,600,null);
+			}
 		}
-
+	
 		//	method to read the image (simplify code above)
 		private Image readImage(String imgStr) {
 			try {
@@ -216,8 +218,52 @@ public class EndView extends JPanel {
 			return yello;
 		}
 	}
+	
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		//these coordinates will probably change once integrated with Raghav's code
+		if(e.getX()>=210 && e.getX()<=510 && e.getY()>=600 && e.getY()<=660)
+			mouseHovered=true;
+		else
+			mouseHovered=false;
+		panel.repaint();
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		//these coordinates will probably change once integrated with Raghav's code
+		if(e.getX()>=210 && e.getX()<=510 && e.getY()>=600 && e.getY()<=660)
+			game.changeView("close");
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
-
-
-
-
